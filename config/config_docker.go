@@ -31,14 +31,15 @@ type DockerNetworkConfiguration struct {
 	// The name of the network to use. If this network already exists it will not
 	// be created. If it is not found, a new network will be created using the interface
 	// defined.
-	Name       string                  `default:"pterodactyl_nw"`
-	ISPN       bool                    `default:"false" yaml:"ispn"`
-	Driver     string                  `default:"bridge"`
-	Mode       string                  `default:"pterodactyl_nw" yaml:"network_mode"`
-	IsInternal bool                    `default:"false" yaml:"is_internal"`
-	EnableICC  bool                    `default:"true" yaml:"enable_icc"`
-	NetworkMTU int64                   `default:"1500" yaml:"network_mtu"`
-	Interfaces dockerNetworkInterfaces `yaml:"interfaces"`
+	Name                         string                  `default:"pterodactyl_nw"`
+	ISPN                         bool                    `default:"false" yaml:"ispn"`
+	Driver                       string                  `default:"bridge"`
+	Mode                         string                  `default:"pterodactyl_nw" yaml:"network_mode"`
+	IsInternal                   bool                    `default:"false" yaml:"is_internal"`
+	EnableICC                    bool                    `default:"true" yaml:"enable_icc"`
+	NetworkMTU                   int64                   `default:"1500" yaml:"network_mtu"`
+	Interfaces                   dockerNetworkInterfaces `yaml:"interfaces"`
+	DisableIPv6InterfaceCreation bool                    `default:"false" yaml:"disable_ipv6_interface_creation"`
 }
 
 // DockerConfiguration defines the docker configuration used by the daemon when

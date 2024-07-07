@@ -72,18 +72,29 @@ func ConfigureDocker(ctx context.Context) error {
 // Creates a new network on the machine if one does not exist already.
 func createDockerNetwork(ctx context.Context, cli *client.Client) error {
 	nw := config.Get().Docker.Network
+
+	ipamConfig := []network.IPAMConfig{{
+		Subnet:  nw.Interfaces.V4.Subnet,
+		Gateway: nw.Interfaces.V4.Gateway,
+	}}
+
+	if nw.DisableIPv6InterfaceCreation == false {
+		log.Info("Not creating IPv6 interface, 'DisableIPv6InterfaceCreation' is true")
+	} else {
+		log.Info("Creating IPv6 interface, 'DisableIPv6InterfaceCreation' is false")
+		ipV6 := network.IPAMConfig{
+			Subnet:  nw.Interfaces.V6.Subnet,
+			Gateway: nw.Interfaces.V6.Gateway,
+		}
+		ipamConfig = append(ipamConfig, ipV6)
+	}
+
 	_, err := cli.NetworkCreate(ctx, nw.Name, types.NetworkCreate{
 		Driver:     nw.Driver,
-		EnableIPv6: true,
+		EnableIPv6: !nw.DisableIPv6InterfaceCreation,
 		Internal:   nw.IsInternal,
 		IPAM: &network.IPAM{
-			Config: []network.IPAMConfig{{
-				Subnet:  nw.Interfaces.V4.Subnet,
-				Gateway: nw.Interfaces.V4.Gateway,
-			}, {
-				Subnet:  nw.Interfaces.V6.Subnet,
-				Gateway: nw.Interfaces.V6.Gateway,
-			}},
+			Config: ipamConfig,
 		},
 		Options: map[string]string{
 			"encryption": "false",
